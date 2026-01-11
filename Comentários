@@ -1,0 +1,3 @@
+A biblioteca que se deve instalar é a fast API. Faça: 
+cd backend
+pip install fastapi uvicorn no powershell
