@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Exploração Inteligente</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      background: #ffffffee;
+      width: 980px;
+      border-radius: 24px;
+      padding: 24px 32px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      color: #6b5ca5;
+      font-weight: 600;
+    }
+
+    .legend {
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    .controls {
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .controls input {
+      width: 70px;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin: 0 6px 6px 4px;
+      font-family: inherit;
+    }
+
+    .mini-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-right: 4px;
+      cursor: pointer;
+      background: #eee;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .mini-btn:hover {
+      background: #ddd;
+      transform: translateY(-1px);
+    }
+
+    .controls .main {
+      margin-top: 8px;
+    }
+
+    .controls button.main-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-right: 6px;
+      margin-top: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: white;
+      font-family: inherit;
+    }
+
+    .btn-a { background: #ff9aa2; }
+    .btn-b { background: #b28dff; }
+    .btn-c { background: #8ecae6; }
+
+    .controls button.main-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .cell {
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      background: #f3f3f3;
+      transition: all 0.2s ease;
+    }
+
+    .cell:hover {
+      transform: scale(1.08);
+    }
+
+    .L { background: #e0f7e9; }
+    .B { background: #ffd6d6; }
+    .T { background: #fff1b8; }
+    .D { background: #ffb3c6; color: white; }
+    .K { background: #9d4edd; color: white; }
+    .N { background: #52b788; color: white; }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .logs {
+      flex: 1;
+      background: #f7f7fb;
+      border-radius: 16px;
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .logs h3 {
+      margin-top: 0;
+      color: #6b5ca5;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div>
+      <h1>Exploração Colaborativa</h1>
+
+      <div class="legend">
+        🌸 <b>D</b> – Árvore de Decisão (cauteloso)<br>
+        💎 <b>K</b> – KNN (por semelhança)<br>
+        🌿 <b>N</b> – Naive Bayes (probabilístico)
+      </div>
+
+      <div class="controls">
+        Tempo (min):
+        <input id="tempo" type="number" min="1" max="120" value="10">
+
+        Agentes por modelo:
+        <input id="agentes" type="number" min="1" max="10" value="1">
+
+        <div style="margin-top:6px">
+          Bombas:
+          <button class="mini-btn" onclick="setBombas(0.5)">50%</button>
+          <button class="mini-btn" onclick="setBombas(0.6)">60%</button>
+          <button class="mini-btn" onclick="setBombas(0.7)">70%</button>
+          <button class="mini-btn" onclick="setBombas(0.8)">80%</button>
+        </div>
+
+        <div class="main">
+          <button class="main-btn btn-a" onclick="iniciar()">Iniciar Exploração</button>
+        </div>
+
+        <div class="main">
+          <button class="main-btn btn-b" onclick="avaliar('A')">Abordagem A</button>
+          <button class="main-btn btn-c" onclick="avaliar('B')">Abordagem B</button>
+          <button class="main-btn btn-a" onclick="avaliar('C')">Abordagem C</button>
+        </div>
+      </div>
+
+      <div id="grid"></div>
+    </div>
+
+    <div class="side">
+      <div class="logs">
+        <h3>Logs</h3>
+        <pre id="logText"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let bombas = 0.5;
+
+    function setBombas(v) {
+      bombas = v;
+    }
+
+    async function iniciar() {
+      const tempo = Math.min(parseInt(document.getElementById("tempo").value),120) * 60;
+      const agentes = parseInt(document.getElementById("agentes").value);
+
+      await fetch("http://localhost:8000/configurar", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          bombas: bombas,
+          agentes: agentes,
+          tempo: tempo
+        })
+      });
+    }
+
+    async function avaliar(tipo) {
+      await fetch(`http://localhost:8000/avaliar/${tipo}`, { method: "POST" });
+    }
+
+    async function atualizar() {
+      const r = await fetch("http://localhost:8000/estado");
+      const data = await r.json();
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+
+      data.grid.forEach(linha => {
+        linha.forEach(celula => {
+          const d = document.createElement("div");
+          d.className = `cell ${celula}`;
+          d.textContent = celula;
+          grid.appendChild(d);
+        });
+      });
+
+      document.getElementById("logText").textContent =
+        data.logs.join("\n");
+    }
+
+    setInterval(atualizar, 500);
+  </script>
+</body>
+</html>
